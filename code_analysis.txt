@@ -1,0 +1,50 @@
+SSD Type :
+    - ideal _ memory 처럼 동작 ( E 필요없음 ) Simple page-mapped
+    - direct _ Program하기 위해서는 Erase해야 함 Simple page-mapped (Direct mapped)
+        (logical page가 쓰여질때, Logical Page Number = Physical Page Number)
+    - log
+
+SSD Operation:
+    - read
+    - write
+    - trim _ Addr.을 input으로 받는다
+            _ 전에 쓰였던 page가 더 이상 사용되지 않음
+            - (log-based SSD에 도움이 됨)
+                => Block's Space에서 더 많은 Free page를 만들 수 있다
+ex)
+prompt> ./ssd.py -T ideal -L w10:a -l 30 -B 3 -p 10
+
+-l Logical Page의 개수
+
+-B Physical Block 개수
+
+-p Physical Block 당 Page 개수
+
+-L _ comma-separated list of commands
+    w10:a = Logical Page 10에 a를 써라
+
+    simple page-mapped FTL 에서는
+        logical page 10을 physical page 10에 쓴다
+
+-C 실행 과정을 Command 창에 쓴다
+
+-F 각 Step에서 각 Page들의 상태를 보여준다
+
+-n Random Workload 생성
+
+-s Random Seed Specify
+
+-q Quiz Mode _ 어떤 Command일지 사용자에게 맞추길 요구함
+-c -q와 같이 쓰면 정답을 알려줌
+
+-S Statistics about operation count per block & estimated time for each operation type
+
+-R -W -E 각 operation의 Cost 셋팅 가능
+
+-G/-g Garbage Collector 관리
+    -G N    N개의 Block이 사용중이면 GC
+    -g M    오직 M개의 Block이 사용중이 될때까지 GC
+
+-J  GC가 어떤 low-level Command를 날리는지 보여줌
+
+-P read/writes/trims 비율 설정 가능

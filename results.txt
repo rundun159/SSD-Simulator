@@ -1,0 +1,948 @@
+ARG seed 10
+ARG num_cmds 60
+ARG op_percentages 40/50/10
+ARG skew 
+ARG skew_start 0
+ARG read_fail 0
+ARG cmd_list 
+ARG ssd_type log
+ARG num_logical_pages 30
+ARG num_blocks 3
+ARG pages_per_block 10
+ARG high_water_mark 3
+ARG low_water_mark 2
+ARG erase_time 1000
+ARG program_time 40
+ARG read_time 10
+ARG show_gc True
+ARG show_state True
+ARG show_cmds True
+ARG quiz_cmds False
+ARG show_stats False
+ARG compute False
+
+FTL   (empty)
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State iiiiiiiiii iiiiiiiiii iiiiiiiiii 
+Data                                   
+Live                                   
+
+cmd   0:: write(12, z) -> success
+
+FTL    12:  0 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vEEEEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z                                
+Live  +                                
+
+cmd   1:: write(19, 9) -> success
+
+FTL    12:  0  19:  1 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvEEEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9                               
+Live  ++                               
+
+cmd   2:: write(9, f) -> success
+
+FTL     9:  2  12:  0  19:  1 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvEEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9f                              
+Live  +++                              
+
+cmd   3:: trim(9) -> success
+
+FTL    12:  0  19:  1 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvEEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9f                              
+Live  ++                               
+
+cmd   4:: read(19) -> 9
+
+FTL    12:  0  19:  1 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvEEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9f                              
+Live  ++                               
+
+cmd   5:: read(19) -> 9
+
+FTL    12:  0  19:  1 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvEEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9f                              
+Live  ++                               
+
+cmd   6:: write(20, F) -> success
+
+FTL    12:  0  19:  1  20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9fF                             
+Live  ++ +                             
+
+cmd   7:: read(20) -> F
+
+FTL    12:  0  19:  1  20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9fF                             
+Live  ++ +                             
+
+cmd   8:: trim(19) -> success
+
+FTL    12:  0  20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9fF                             
+Live  +  +                             
+
+cmd   9:: read(12) -> z
+
+FTL    12:  0  20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9fF                             
+Live  +  +                             
+
+cmd  10:: trim(12) -> success
+
+FTL    20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvEEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9fF                             
+Live     +                             
+
+cmd  11:: write(1, A) -> success
+
+FTL     1:  4  20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvEEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9fFA                            
+Live     ++                            
+
+cmd  12:: write(4, d) -> success
+
+FTL     1:  4   4:  5  20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvEEEE iiiiiiiiii iiiiiiiiii 
+Data  z9fFAd                           
+Live     +++                           
+
+cmd  13:: write(1, u) -> success
+
+FTL     1:  6   4:  5  20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvEEE iiiiiiiiii iiiiiiiiii 
+Data  z9fFAdu                          
+Live     + ++                          
+
+cmd  14:: write(19, x) -> success
+
+FTL     1:  6   4:  5  19:  7  20:  3 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvEE iiiiiiiiii iiiiiiiiii 
+Data  z9fFAdux                         
+Live     + +++                         
+
+cmd  15:: write(4, z) -> success
+
+FTL     1:  6   4:  8  19:  7  20:  3 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvE iiiiiiiiii iiiiiiiiii 
+Data  z9fFAduxz                        
+Live     +  +++                        
+
+cmd  16:: read(20) -> F
+
+FTL     1:  6   4:  8  19:  7  20:  3 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvE iiiiiiiiii iiiiiiiiii 
+Data  z9fFAduxz                        
+Live     +  +++                        
+
+cmd  17:: write(2, a) -> success
+
+FTL     1:  6   2:  9   4:  8  19:  7 
+       20:  3 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv iiiiiiiiii iiiiiiiiii 
+Data  z9fFAduxza                       
+Live     +  ++++                       
+
+cmd  18:: write(28, q) -> success
+
+FTL     1:  6   2:  9   4:  8  19:  7 
+       20:  3  28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vEEEEEEEEE iiiiiiiiii 
+Data  z9fFAduxza q                     
+Live     +  ++++ +                     
+
+cmd  19:: write(7, h) -> success
+
+FTL     1:  6   2:  9   4:  8   7: 11 
+       19:  7  20:  3  28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvEEEEEEEE iiiiiiiiii 
+Data  z9fFAduxza qh                    
+Live     +  ++++ ++                    
+
+cmd  20:: write(5, 7) -> success
+
+FTL     1:  6   2:  9   4:  8   5: 12 
+        7: 11  19:  7  20:  3  28: 10 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvEEEEEEE iiiiiiiiii 
+Data  z9fFAduxza qh7                   
+Live     +  ++++ +++                   
+
+cmd  21:: write(4, E) -> success
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11  19:  7  20:  3  28: 10 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvEEEEEE iiiiiiiiii 
+Data  z9fFAduxza qh7E                  
+Live     +  ++ + ++++                  
+
+cmd  22:: write(23, t) -> success
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11  19:  7  20:  3  23: 14 
+       28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvEEEEE iiiiiiiiii 
+Data  z9fFAduxza qh7Et                 
+Live     +  ++ + +++++                 
+
+cmd  23:: read(20) -> F
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11  19:  7  20:  3  23: 14 
+       28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvEEEEE iiiiiiiiii 
+Data  z9fFAduxza qh7Et                 
+Live     +  ++ + +++++                 
+
+cmd  24:: write(9, j) -> success
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11   9: 15  19:  7  20:  3 
+       23: 14  28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvEEEE iiiiiiiiii 
+Data  z9fFAduxza qh7Etj                
+Live     +  ++ + ++++++                
+
+cmd  25:: read(28) -> q
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11   9: 15  19:  7  20:  3 
+       23: 14  28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvEEEE iiiiiiiiii 
+Data  z9fFAduxza qh7Etj                
+Live     +  ++ + ++++++                
+
+cmd  26:: read(7) -> h
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11   9: 15  19:  7  20:  3 
+       23: 14  28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvEEEE iiiiiiiiii 
+Data  z9fFAduxza qh7Etj                
+Live     +  ++ + ++++++                
+
+cmd  27:: read(9) -> j
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11   9: 15  19:  7  20:  3 
+       23: 14  28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvEEEE iiiiiiiiii 
+Data  z9fFAduxza qh7Etj                
+Live     +  ++ + ++++++                
+
+cmd  28:: write(18, 3) -> success
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11   9: 15  18: 16  19:  7 
+       20:  3  23: 14  28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvEEE iiiiiiiiii 
+Data  z9fFAduxza qh7Etj3               
+Live     +  ++ + +++++++               
+
+cmd  29:: write(13, o) -> success
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11   9: 15  13: 17  18: 16 
+       19:  7  20:  3  23: 14  28: 10 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvEE iiiiiiiiii 
+Data  z9fFAduxza qh7Etj3o              
+Live     +  ++ + ++++++++              
+
+cmd  30:: write(17, x) -> success
+
+FTL     1:  6   2:  9   4: 13   5: 12 
+        7: 11   9: 15  13: 17  17: 18 
+       18: 16  19:  7  20:  3  23: 14 
+       28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvE iiiiiiiiii 
+Data  z9fFAduxza qh7Etj3ox             
+Live     +  ++ + +++++++++             
+
+cmd  31:: write(4, r) -> success
+
+FTL     1:  6   2:  9   4: 19   5: 12 
+        7: 11   9: 15  13: 17  17: 18 
+       18: 16  19:  7  20:  3  23: 14 
+       28: 10 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv iiiiiiiiii 
+Data  z9fFAduxza qh7Etj3oxr            
+Live     +  ++ + +++ ++++++            
+
+cmd  32:: trim(28) -> success
+
+FTL     1:  6   2:  9   4: 19   5: 12 
+        7: 11   9: 15  13: 17  17: 18 
+       18: 16  19:  7  20:  3  23: 14 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv iiiiiiiiii 
+Data  z9fFAduxza qh7Etj3oxr            
+Live     +  ++ +  ++ ++++++            
+
+cmd  33:: read(5) -> 7
+
+FTL     1:  6   2:  9   4: 19   5: 12 
+        7: 11   9: 15  13: 17  17: 18 
+       18: 16  19:  7  20:  3  23: 14 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv iiiiiiiiii 
+Data  z9fFAduxza qh7Etj3oxr            
+Live     +  ++ +  ++ ++++++            
+
+cmd  34:: read(1) -> u
+
+FTL     1:  6   2:  9   4: 19   5: 12 
+        7: 11   9: 15  13: 17  17: 18 
+       18: 16  19:  7  20:  3  23: 14 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv iiiiiiiiii 
+Data  z9fFAduxza qh7Etj3oxr            
+Live     +  ++ +  ++ ++++++            
+
+cmd  35:: write(29, u) -> success
+
+FTL     1:  6   2:  9   4: 19   5: 12 
+        7: 11   9: 15  13: 17  17: 18 
+       18: 16  19:  7  20:  3  23: 14 
+       29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv vEEEEEEEEE 
+Data  z9fFAduxza qh7Etj3oxr u          
+Live     +  ++ +  ++ ++++++ +          
+
+gc 0:: read(physical_page=3)
+gc 0:: write()
+gc 0:: read(physical_page=6)
+gc 0:: write()
+gc 0:: read(physical_page=7)
+gc 0:: write()
+gc 0:: read(physical_page=9)
+gc 0:: write()
+gc 0:: erase(block=0)
+
+FTL     1: 22   2: 24   4: 19   5: 12 
+        7: 11   9: 15  13: 17  17: 18 
+       18: 16  19: 23  20: 21  23: 14 
+       29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State EEEEEEEEEE vvvvvvvvvv vvvvvEEEEE 
+Data             qh7Etj3oxr uFuxa      
+Live              ++ ++++++ +++++      
+
+cmd  36:: write(13, v) -> success
+
+FTL     1: 22   2: 24   4: 19   5: 12 
+        7: 11   9: 15  13: 25  17: 18 
+       18: 16  19: 23  20: 21  23: 14 
+       29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State EEEEEEEEEE vvvvvvvvvv vvvvvvEEEE 
+Data             qh7Etj3oxr uFuxav     
+Live              ++ +++ ++ ++++++     
+
+cmd  37:: write(21, T) -> success
+
+FTL     1: 22   2: 24   4: 19   5: 12 
+        7: 11   9: 15  13: 25  17: 18 
+       18: 16  19: 23  20: 21  21: 26 
+       23: 14  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State EEEEEEEEEE vvvvvvvvvv vvvvvvvEEE 
+Data             qh7Etj3oxr uFuxavT    
+Live              ++ +++ ++ +++++++    
+
+cmd  38:: write(12, E) -> success
+
+FTL     1: 22   2: 24   4: 19   5: 12 
+        7: 11   9: 15  12: 27  13: 25 
+       17: 18  18: 16  19: 23  20: 21 
+       21: 26  23: 14  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State EEEEEEEEEE vvvvvvvvvv vvvvvvvvEE 
+Data             qh7Etj3oxr uFuxavTE   
+Live              ++ +++ ++ ++++++++   
+
+cmd  39:: trim(4) -> success
+
+FTL     1: 22   2: 24   5: 12   7: 11 
+        9: 15  12: 27  13: 25  17: 18 
+       18: 16  19: 23  20: 21  21: 26 
+       23: 14  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State EEEEEEEEEE vvvvvvvvvv vvvvvvvvEE 
+Data             qh7Etj3oxr uFuxavTE   
+Live              ++ +++ +  ++++++++   
+
+cmd  40:: read(13) -> v
+
+FTL     1: 22   2: 24   5: 12   7: 11 
+        9: 15  12: 27  13: 25  17: 18 
+       18: 16  19: 23  20: 21  21: 26 
+       23: 14  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State EEEEEEEEEE vvvvvvvvvv vvvvvvvvEE 
+Data             qh7Etj3oxr uFuxavTE   
+Live              ++ +++ +  ++++++++   
+
+cmd  41:: write(17, P) -> success
+
+FTL     1: 22   2: 24   5: 12   7: 11 
+        9: 15  12: 27  13: 25  17: 28 
+       18: 16  19: 23  20: 21  21: 26 
+       23: 14  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State EEEEEEEEEE vvvvvvvvvv vvvvvvvvvE 
+Data             qh7Etj3oxr uFuxavTEP  
+Live              ++ +++    +++++++++  
+
+cmd  42:: write(24, X) -> success
+
+FTL     1: 22   2: 24   5: 12   7: 11 
+        9: 15  12: 27  13: 25  17: 28 
+       18: 16  19: 23  20: 21  21: 26 
+       23: 14  24: 29  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State EEEEEEEEEE vvvvvvvvvv vvvvvvvvvv 
+Data             qh7Etj3oxr uFuxavTEPX 
+Live              ++ +++    ++++++++++ 
+
+cmd  43:: write(25, I) -> success
+
+FTL     1: 22   2: 24   5: 12   7: 11 
+        9: 15  12: 27  13: 25  17: 28 
+       18: 16  19: 23  20: 21  21: 26 
+       23: 14  24: 29  25:  0  29: 20 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vEEEEEEEEE vvvvvvvvvv vvvvvvvvvv 
+Data  I          qh7Etj3oxr uFuxavTEPX 
+Live  +           ++ +++    ++++++++++ 
+
+gc 1:: read(physical_page=11)
+gc 1:: write()
+gc 1:: read(physical_page=12)
+gc 1:: write()
+gc 1:: read(physical_page=14)
+gc 1:: write()
+gc 1:: read(physical_page=15)
+gc 1:: write()
+gc 1:: read(physical_page=16)
+gc 1:: write()
+gc 1:: erase(block=1)
+
+FTL     1: 22   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13: 25  17: 28 
+       18:  5  19: 23  20: 21  21: 26 
+       23:  3  24: 29  25:  0  29: 20 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvEEEE EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3                uFuxavTEPX 
+Live  ++++++                ++++++++++ 
+
+cmd  44:: write(1, U) -> success
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13: 25  17: 28 
+       18:  5  19: 23  20: 21  21: 26 
+       23:  3  24: 29  25:  0  29: 20 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvEEE EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3U               uFuxavTEPX 
+Live  +++++++               ++ +++++++ 
+
+cmd  45:: write(28, Y) -> success
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13: 25  17: 28 
+       18:  5  19: 23  20: 21  21: 26 
+       23:  3  24: 29  25:  0  28:  7 
+       29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvEE EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UY              uFuxavTEPX 
+Live  ++++++++              ++ +++++++ 
+
+cmd  46:: read(19) -> x
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13: 25  17: 28 
+       18:  5  19: 23  20: 21  21: 26 
+       23:  3  24: 29  25:  0  28:  7 
+       29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvEE EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UY              uFuxavTEPX 
+Live  ++++++++              ++ +++++++ 
+
+cmd  47:: write(27, b) -> success
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13: 25  17: 28 
+       18:  5  19: 23  20: 21  21: 26 
+       23:  3  24: 29  25:  0  27:  8 
+       28:  7  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvE EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UYb             uFuxavTEPX 
+Live  +++++++++             ++ +++++++ 
+
+cmd  48:: read(2) -> a
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13: 25  17: 28 
+       18:  5  19: 23  20: 21  21: 26 
+       23:  3  24: 29  25:  0  27:  8 
+       28:  7  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvE EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UYb             uFuxavTEPX 
+Live  +++++++++             ++ +++++++ 
+
+cmd  49:: read(27) -> b
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13: 25  17: 28 
+       18:  5  19: 23  20: 21  21: 26 
+       23:  3  24: 29  25:  0  27:  8 
+       28:  7  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvE EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UYb             uFuxavTEPX 
+Live  +++++++++             ++ +++++++ 
+
+cmd  50:: write(13, K) -> success
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13:  9  17: 28 
+       18:  5  19: 23  20: 21  21: 26 
+       23:  3  24: 29  25:  0  27:  8 
+       28:  7  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UYbK            uFuxavTEPX 
+Live  ++++++++++            ++ ++ ++++ 
+
+cmd  51:: write(15, q) -> success
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 27  13:  9  15: 10 
+       17: 28  18:  5  19: 23  20: 21 
+       21: 26  23:  3  24: 29  25:  0 
+       27:  8  28:  7  29: 20 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UYbK q          uFuxavTEPX 
+Live  ++++++++++ +          ++ ++ ++++ 
+
+gc 2:: read(physical_page=20)
+gc 2:: write()
+gc 2:: read(physical_page=21)
+gc 2:: write()
+gc 2:: read(physical_page=23)
+gc 2:: write()
+gc 2:: read(physical_page=24)
+gc 2:: write()
+gc 2:: read(physical_page=26)
+gc 2:: write()
+gc 2:: read(physical_page=27)
+gc 2:: write()
+gc 2:: read(physical_page=28)
+gc 2:: write()
+gc 2:: read(physical_page=29)
+gc 2:: write()
+gc 2:: erase(block=2)
+
+FTL     1:  6   2: 14   5:  2   7:  1 
+        9:  4  12: 16  13:  9  15: 10 
+       17: 17  18:  5  19: 13  20: 12 
+       21: 15  23:  3  24: 18  25:  0 
+       27:  8  28:  7  29: 11 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvE EEEEEEEEEE 
+Data  Ih7tj3UYbK quFxaTEPX             
+Live  ++++++++++ +++++++++             
+
+cmd  52:: write(16, g) -> success
+
+FTL     1:  6   2: 14   5:  2   7:  1 
+        9:  4  12: 16  13:  9  15: 10 
+       16: 19  17: 17  18:  5  19: 13 
+       20: 12  21: 15  23:  3  24: 18 
+       25:  0  27:  8  28:  7  29: 11 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv EEEEEEEEEE 
+Data  Ih7tj3UYbK quFxaTEPXg            
+Live  ++++++++++ ++++++++++            
+
+cmd  53:: read(21) -> T
+
+FTL     1:  6   2: 14   5:  2   7:  1 
+        9:  4  12: 16  13:  9  15: 10 
+       16: 19  17: 17  18:  5  19: 13 
+       20: 12  21: 15  23:  3  24: 18 
+       25:  0  27:  8  28:  7  29: 11 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv EEEEEEEEEE 
+Data  Ih7tj3UYbK quFxaTEPXg            
+Live  ++++++++++ ++++++++++            
+
+cmd  54:: read(27) -> b
+
+FTL     1:  6   2: 14   5:  2   7:  1 
+        9:  4  12: 16  13:  9  15: 10 
+       16: 19  17: 17  18:  5  19: 13 
+       20: 12  21: 15  23:  3  24: 18 
+       25:  0  27:  8  28:  7  29: 11 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv EEEEEEEEEE 
+Data  Ih7tj3UYbK quFxaTEPXg            
+Live  ++++++++++ ++++++++++            
+
+cmd  55:: write(19, 4) -> success
+
+FTL     1:  6   2: 14   5:  2   7:  1 
+        9:  4  12: 16  13:  9  15: 10 
+       16: 19  17: 17  18:  5  19: 20 
+       20: 12  21: 15  23:  3  24: 18 
+       25:  0  27:  8  28:  7  29: 11 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv vEEEEEEEEE 
+Data  Ih7tj3UYbK quFxaTEPXg 4          
+Live  ++++++++++ +++ ++++++ +          
+
+gc 3:: read(physical_page=10)
+gc 3:: write()
+gc 3:: read(physical_page=11)
+gc 3:: write()
+gc 3:: read(physical_page=12)
+gc 3:: write()
+gc 3:: read(physical_page=14)
+gc 3:: write()
+gc 3:: read(physical_page=15)
+gc 3:: write()
+gc 3:: read(physical_page=16)
+gc 3:: write()
+gc 3:: read(physical_page=17)
+gc 3:: write()
+gc 3:: read(physical_page=18)
+gc 3:: write()
+gc 3:: read(physical_page=19)
+gc 3:: write()
+gc 3:: erase(block=1)
+
+FTL     1:  6   2: 24   5:  2   7:  1 
+        9:  4  12: 26  13:  9  15: 21 
+       16: 29  17: 27  18:  5  19: 20 
+       20: 23  21: 25  23:  3  24: 28 
+       25:  0  27:  8  28:  7  29: 22 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UYbK            4quFaTEPXg 
+Live  ++++++++++            ++++++++++ 
+
+cmd  56:: write(2, 3) -> success
+
+FTL     1:  6   2: 10   5:  2   7:  1 
+        9:  4  12: 26  13:  9  15: 21 
+       16: 29  17: 27  18:  5  19: 20 
+       20: 23  21: 25  23:  3  24: 28 
+       25:  0  27:  8  28:  7  29: 22 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UYbK 3          4quFaTEPXg 
+Live  ++++++++++ +          ++++ +++++ 
+
+gc 4:: read(physical_page=20)
+gc 4:: write()
+gc 4:: read(physical_page=21)
+gc 4:: write()
+gc 4:: read(physical_page=22)
+gc 4:: write()
+gc 4:: read(physical_page=23)
+gc 4:: write()
+gc 4:: read(physical_page=25)
+gc 4:: write()
+gc 4:: read(physical_page=26)
+gc 4:: write()
+gc 4:: read(physical_page=27)
+gc 4:: write()
+gc 4:: read(physical_page=28)
+gc 4:: write()
+gc 4:: read(physical_page=29)
+gc 4:: write()
+gc 4:: erase(block=2)
+
+FTL     1:  6   2: 10   5:  2   7:  1 
+        9:  4  12: 16  13:  9  15: 12 
+       16: 19  17: 17  18:  5  19: 11 
+       20: 14  21: 15  23:  3  24: 18 
+       25:  0  27:  8  28:  7  29: 13 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv EEEEEEEEEE 
+Data  Ih7tj3UYbK 34quFTEPXg            
+Live  ++++++++++ ++++++++++            
+
+cmd  57:: read(25) -> I
+
+FTL     1:  6   2: 10   5:  2   7:  1 
+        9:  4  12: 16  13:  9  15: 12 
+       16: 19  17: 17  18:  5  19: 11 
+       20: 14  21: 15  23:  3  24: 18 
+       25:  0  27:  8  28:  7  29: 13 
+      
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv EEEEEEEEEE 
+Data  Ih7tj3UYbK 34quFTEPXg            
+Live  ++++++++++ ++++++++++            
+
+cmd  58:: write(8, H) -> success
+
+FTL     1:  6   2: 10   5:  2   7:  1 
+        8: 20   9:  4  12: 16  13:  9 
+       15: 12  16: 19  17: 17  18:  5 
+       19: 11  20: 14  21: 15  23:  3 
+       24: 18  25:  0  27:  8  28:  7 
+       29: 13 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv vEEEEEEEEE 
+Data  Ih7tj3UYbK 34quFTEPXg H          
+Live  ++++++++++ ++++++++++ +          
+
+cmd  59:: write(15, g) -> success
+
+FTL     1:  6   2: 10   5:  2   7:  1 
+        8: 20   9:  4  12: 16  13:  9 
+       15: 21  16: 19  17: 17  18:  5 
+       19: 11  20: 14  21: 15  23:  3 
+       24: 18  25:  0  27:  8  28:  7 
+       29: 13 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv vvvvvvvvvv vvEEEEEEEE 
+Data  Ih7tj3UYbK 34quFTEPXg Hg         
+Live  ++++++++++ ++ +++++++ ++         
+
+gc 5:: read(physical_page=10)
+gc 5:: write()
+gc 5:: read(physical_page=11)
+gc 5:: write()
+gc 5:: read(physical_page=13)
+gc 5:: write()
+gc 5:: read(physical_page=14)
+gc 5:: write()
+gc 5:: read(physical_page=15)
+gc 5:: write()
+gc 5:: read(physical_page=16)
+gc 5:: write()
+gc 5:: read(physical_page=17)
+gc 5:: write()
+gc 5:: read(physical_page=18)
+gc 5:: write()
+gc 5:: read(physical_page=19)
+gc 5:: write()
+gc 5:: erase(block=1)
+
+FTL     1:  6   2: 22   5:  2   7:  1 
+        8: 20   9:  4  12: 27  13:  9 
+       15: 21  16: 19  17: 28  18:  5 
+       19: 23  20: 25  21: 26  23:  3 
+       24: 29  25:  0  27:  8  28:  7 
+       29: 24 
+Block 0          1          2          
+Page  0000000000 1111111111 2222222222 
+      0123456789 0123456789 0123456789 
+State vvvvvvvvvv EEEEEEEEEE vvvvvvvvvv 
+Data  Ih7tj3UYbK            Hg34uFTEPX 
+Live  ++++++++++            ++++++++++ 
+
+
