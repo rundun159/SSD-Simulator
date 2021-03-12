@@ -357,7 +357,7 @@ It is about wear leveling
 - Compare with k 100
     - direct => results_K_direct.txt
     - log => results_K_log.txt
-   => (with -k 100) More GC needed _ less flexible block managing?
+   => (with -k 100) There are 80% cold pages. GC is less efficient with cold pages. Less Erased pages are made with more cold pages
 
 
 
