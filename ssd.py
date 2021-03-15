@@ -55,6 +55,9 @@ class ssd:
         for i in range(self.num_pages):
             self.data[i] = ' '
 
+
+        #@@TH : in the case of log-structured FTL this one is needed
+
         # LOGGING stuff
         # reverse map: for each physical page, what LOGICAL page refers to it?
         # which page to write to right now?
@@ -70,6 +73,8 @@ class ssd:
         self.gc_trace = trace_gc
         self.show_state = show_state
 
+        #@@TH : gc_used_blocks _ becomes 1 when it is used
+
         # can use this as a log block
         self.gc_used_blocks = {}
         for i in range(self.num_blocks):
@@ -79,6 +84,10 @@ class ssd:
         self.live_count = {}
         for i in range(self.num_blocks):
             self.live_count[i] = 0
+
+        #@@TH : FTL saves both sides mapping LBA <> PBA
+        # forward_map : logical address => physical address
+        # reverse_map : logical address <= physical address
 
         # FTL
         self.forward_map = {}
@@ -190,6 +199,9 @@ class ssd:
             return True
         return False
 
+
+    #@@TH : check is there any Invalid / Erased Pages
+
     def get_cursor(self):
         if self.current_page == -1:
             for block in range(self.current_block, self.num_blocks) + range(0, self.current_block):
@@ -198,11 +210,14 @@ class ssd:
             return -1
         return 0
 
+    #@@TH : Update current_page
+
     def update_cursor(self):
         self.current_page += 1
         if self.current_page % self.pages_per_block == 0:
             self.current_page = -1
         return
+
 
     def write_logging(self, page_address, data, is_gc_write=False):
         if self.get_cursor() == -1:
@@ -266,7 +281,6 @@ class ssd:
                 self.gc_current_block = block
                 self.gc_count += 1
                 return
-
         # END: block iteration
         return
 
@@ -298,6 +312,7 @@ class ssd:
             return 'fail: uninitialized read'
         # USED for DIRECT and LOGGING and IDEAL
         return self.read_direct(self.forward_map[address])
+
 
     def write(self, address, data):
         self.logical_write_sum += 1
